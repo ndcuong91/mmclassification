@@ -18,9 +18,11 @@ from mmcls.models import build_classifier
 from mmcls.utils import collect_env, get_root_logger, setup_multi_processes
 
 
+config_file = '/home/cuongnd/PycharmProjects/mmclassification/configs/efficientnet/efficientnet-b3_8xb32_doc_quality.py'
+# config_file = '/home/cuongnd/PycharmProjects/mmclassification/configs/resnet/resnet50_b16x8_cifar10.py'
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a model')
-    parser.add_argument('config', help='train config file path')
+    parser.add_argument('--config', help='train config file path', default=config_file)
     parser.add_argument('--work-dir', help='the dir to save logs and models')
     parser.add_argument(
         '--resume-from', help='the checkpoint file to resume from')

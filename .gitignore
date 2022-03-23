@@ -123,3 +123,4 @@ venv.bak/
 
 # Pytorch
 *.pth
+tools/work_dirs/
