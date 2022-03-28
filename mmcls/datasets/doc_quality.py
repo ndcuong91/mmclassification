@@ -48,6 +48,7 @@ class DocQuality(BaseDataset):
     """Dataset kiểm tra chất lượng giấy tờ voi 6 class
     """
     CLASSES = ['normal','bong_loa','mo_che','toi','photocopy','chup_man_hinh']
+    #CLASSES = ['fake','other','real']
     def load_annotations(self):
         if self.ann_file is None:
             folder_to_idx = find_folders(self.data_prefix)

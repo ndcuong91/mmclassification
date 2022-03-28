@@ -17,11 +17,15 @@ from mmcls.datasets import build_dataloader, build_dataset
 from mmcls.models import build_classifier
 from mmcls.utils import get_root_logger, setup_multi_processes
 
+config = '../configs/efficientnet/efficientnet-b3_8xb32_doc_quality.py'
+ckpt = 'work_dirs/efficientnet-b3_8xb32_doc_quality/epoch_120.pth'
+show = True
+eval_metric = "accuracy"
 
 def parse_args():
     parser = argparse.ArgumentParser(description='mmcls test model')
-    parser.add_argument('config', help='test config file path')
-    parser.add_argument('checkpoint', help='checkpoint file')
+    parser.add_argument('--config', help='test config file path', default = config)
+    parser.add_argument('--checkpoint', help='checkpoint file', default = ckpt)
     parser.add_argument('--out', help='output result file')
     out_options = ['class_scores', 'pred_score', 'pred_label', 'pred_class']
     parser.add_argument(
@@ -38,11 +42,12 @@ def parse_args():
         '--metrics',
         type=str,
         nargs='+',
+        default = eval_metric,
         help='evaluation metrics, which depends on the dataset, e.g., '
         '"accuracy", "precision", "recall", "f1_score", "support" for single '
         'label dataset, and "mAP", "CP", "CR", "CF1", "OP", "OR", "OF1" for '
         'multi-label dataset')
-    parser.add_argument('--show', action='store_true', help='show results')
+    parser.add_argument('--show', default=show, help='show results')
     parser.add_argument(
         '--show-dir', help='directory where painted images will be saved')
     parser.add_argument(

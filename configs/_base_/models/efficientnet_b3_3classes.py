@@ -1,12 +1,14 @@
 # model settings
 model = dict(
     type='ImageClassifier',
-    backbone=dict(type='EfficientNet', arch='b3'),
+    backbone=dict(
+        type='EfficientNet',
+        arch='b3'),
     neck=dict(type='GlobalAveragePooling'),
     head=dict(
         type='LinearClsHead',
         num_classes=6,
-        in_channels=1536,
+        # in_channels=1536,
         loss=dict(type='CrossEntropyLoss', loss_weight=1.0),
-        topk=(1, 5),
+        topk=1,
     ))

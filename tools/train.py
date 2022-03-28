@@ -18,7 +18,7 @@ from mmcls.models import build_classifier
 from mmcls.utils import collect_env, get_root_logger, setup_multi_processes
 
 
-config_file = '/home/cuongnd/PycharmProjects/mmclassification/configs/efficientnet/efficientnet-b3_8xb32_doc_quality.py'
+config_file = '../configs/efficientnet/efficientnet-b3_8xb32_doc_quality.py'
 # config_file = '/home/cuongnd/PycharmProjects/mmclassification/configs/resnet/resnet50_b16x8_cifar10.py'
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a model')
