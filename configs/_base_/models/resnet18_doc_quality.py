@@ -2,13 +2,16 @@
 model = dict(
     type='ImageClassifier',
     backbone=dict(
-        type='EfficientNet',
-        arch='b3'),
+        type='ResNet',
+        depth=18,
+        num_stages=4,
+        out_indices=(3, ),
+        style='pytorch'),
     neck=dict(type='GlobalAveragePooling'),
     head=dict(
         type='LinearClsHead',
         num_classes=6,
-        # in_channels=1536,
+        in_channels=512,
         loss=dict(type='CrossEntropyLoss', loss_weight=1.0),
-        topk=1,
+        topk=(1, 3),
     ))

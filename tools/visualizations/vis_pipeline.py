@@ -22,7 +22,7 @@ from mmcls.models.utils import to_2tuple
 bright_style, reset_style = '\x1b[1m', '\x1b[0m'
 red_text, blue_text = '\x1b[31m', '\x1b[34m'
 white_background = '\x1b[107m'
-
+output_dir = '/home/cuongnd/PycharmProjects/document_quality_dataset/doc_quality/viz_train_pipeline'
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -36,7 +36,7 @@ def parse_args():
         help='the pipelines to skip when visualizing')
     parser.add_argument(
         '--output-dir',
-        default='',
+        default=output_dir,
         type=str,
         help='folder to save output pictures, if not set, do not save.')
     parser.add_argument(

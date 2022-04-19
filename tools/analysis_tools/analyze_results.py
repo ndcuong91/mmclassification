@@ -1,5 +1,5 @@
 # Copyright (c) OpenMMLab. All rights reserved.
-import argparse
+import argparse, os
 import os.path as osp
 
 import mmcv
@@ -9,15 +9,21 @@ from mmcls.datasets import build_dataset
 from mmcls.models import build_classifier
 
 
+config_file = '/home/cuongnd/PycharmProjects/mmclassification/configs/resnet/resnet18_8xb16_doc_quality.py'
+res_file = '/home/cuongnd/PycharmProjects/mmclassification/tools/best_accuracy_epoch_176_res.pkl'
+out_dir = '/home/cuongnd/PycharmProjects/document_quality_dataset/doc_quality/res/'+os.path.basename(res_file).split('.')[0]
+if not os.path.exists(out_dir): os.makedirs(out_dir)
+split_success_fail = True
+threshold = 0.0
+
 def parse_args():
-    parser = argparse.ArgumentParser(
-        description='MMCls evaluate prediction success/fail')
-    parser.add_argument('config', help='test config file path')
-    parser.add_argument('result', help='test result json/pkl file')
-    parser.add_argument('--out-dir', help='dir to store output files')
+    parser = argparse.ArgumentParser(description='MMCls evaluate prediction success/fail')
+    parser.add_argument('--config', help='test config file path', default = config_file)
+    parser.add_argument('--result', help='test result json/pkl file', default = res_file)
+    parser.add_argument('--out-dir', help='dir to store output files', default = out_dir)
     parser.add_argument(
         '--topk',
-        default=20,
+        default=1000,
         type=int,
         help='Number of images to select for success/fail')
     parser.add_argument(
@@ -35,7 +41,7 @@ def parse_args():
     return args
 
 
-def save_imgs(result_dir, folder_name, results, model):
+def save_imgs(result_dir, folder_name, results, model, filter = False):
     full_dir = osp.join(result_dir, folder_name)
     mmcv.mkdir_or_exist(full_dir)
     mmcv.dump(results, osp.join(full_dir, folder_name + '.json'))
@@ -43,9 +49,50 @@ def save_imgs(result_dir, folder_name, results, model):
     # save imgs
     show_keys = ['pred_score', 'pred_class', 'gt_class']
     for result in results:
-        result_show = dict((k, v) for k, v in result.items() if k in show_keys)
-        outfile = osp.join(full_dir, osp.basename(result['filename']))
-        model.show_result(result['filename'], result_show, out_file=outfile)
+        cont_ok = filter and result['gt_label']==3
+        if not filter or cont_ok:
+            result_show = dict((k, v) for k, v in result.items() if k in show_keys)
+            outfile = osp.join(full_dir, osp.basename(result['filename']))
+            model.show_result(result['filename'], result_show, out_file=outfile, norm_size=800)
+
+
+def plot_confusion_matrix(preds, gts, list_class =[]):
+    '''
+    Draw confusion matrix
+    :param preds: list of preds. eg [0,1,2]
+    :param gts: list of ground-truth. eg [0,1,2]
+    :return:
+    '''
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+    import numpy as np
+    from sklearn.metrics import confusion_matrix
+
+    list_class = [cls[:5] for cls in list_class]
+
+    # Get the confusion matrix
+    cf_matrix = confusion_matrix(gts, preds)
+    cf_matrix_norm = []
+    for line in cf_matrix:
+        total = np.sum(line)
+        new_line =[]
+        for idx, val in enumerate(line):
+            new_line.append( round(100*val/total,2))
+        cf_matrix_norm.append(new_line)
+
+    print(cf_matrix_norm)
+    ax = sns.heatmap(cf_matrix_norm, annot=True, cmap='Blues')
+
+    ax.set_title('Confusion Matrix with labels\n');
+    ax.set_xlabel('Predicted ')
+    ax.set_ylabel('Ground truth');
+
+    ax.xaxis.set_ticklabels(list_class)
+    ax.yaxis.set_ticklabels(list_class)
+
+    ## Display the visualization of the Confusion Matrix.
+    # plt.show()
+    plt.savefig(os.path.join(out_dir, 'conf_matrix_{}.png'.format(threshold)))
 
 
 def main():
@@ -98,18 +145,45 @@ def main():
 
     success = list()
     fail = list()
+
+    list_preds =[]
+    list_gts =[]
+    total_samples ={'normal':0,'abnormal':0}
+    true_samples ={'normal':0,'abnormal':0}
     for output in outputs_list:
-        if output['pred_label'] == output['gt_label']:
-            success.append(output)
-        else:
-            fail.append(output)
+        if output['pred_score']>threshold and output['gt_label']!=0:
+            list_preds.append(output['pred_label'])
+            list_gts.append(output['gt_label'])
+            if output['gt_label'] ==3:
+                total_samples['normal']+=1
+            else :
+                total_samples['abnormal']+=1
+
+            if output['pred_label'] == output['gt_label'] and output['pred_label'] ==3:
+                true_samples['normal']+=1
+            if output['pred_label'] !=3 and output['gt_label'] !=3:
+                true_samples['abnormal']+=1
+
+            if output['pred_label'] == output['gt_label']:
+                success.append(output)
+            else:
+                fail.append(output)
 
     success = success[:args.topk]
     fail = fail[:args.topk]
 
-    save_imgs(args.out_dir, 'success', success, model)
-    save_imgs(args.out_dir, 'fail', fail, model)
+    print('normal acc:', round(100*true_samples['normal']/total_samples['normal'],2))
+    print('abnormal acc:', round(100*true_samples['abnormal']/total_samples['abnormal'],2))
+
+    plot_confusion_matrix(list_preds, list_gts, list_class=dataset.CLASSES)
+
+    if split_success_fail:
+        print('Split imgs to success / fail based on pred / gt...')
+        #save_imgs(args.out_dir, 'success', success, model)
+        save_imgs(args.out_dir, 'fail', fail, model, filter = True)
+        print('Done')
 
 
 if __name__ == '__main__':
     main()
+

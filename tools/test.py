@@ -17,16 +17,18 @@ from mmcls.datasets import build_dataloader, build_dataset
 from mmcls.models import build_classifier
 from mmcls.utils import get_root_logger, setup_multi_processes
 
-config = '../configs/efficientnet/efficientnet-b3_8xb32_doc_quality.py'
-ckpt = 'work_dirs/efficientnet-b3_8xb32_doc_quality/epoch_120.pth'
-show = True
+config = '../configs/resnet/resnet50_8xb16_doc_quality.py'
+ckpt = '/home/cuongnd/PycharmProjects/mmclassification/tools/work_dirs/resnet50_8xb16_doc_quality/best_accuracy_epoch_176.pth'
+show = False
 eval_metric = "accuracy"
+save_dir ='/home/cuongnd/PycharmProjects/mmclassification/data/doc_quality/res'
+output_res_file = os.path.basename(ckpt).split('.')[0]+'_res.pkl'
 
 def parse_args():
     parser = argparse.ArgumentParser(description='mmcls test model')
     parser.add_argument('--config', help='test config file path', default = config)
     parser.add_argument('--checkpoint', help='checkpoint file', default = ckpt)
-    parser.add_argument('--out', help='output result file')
+    parser.add_argument('--out', help='output result file', default = output_res_file)
     out_options = ['class_scores', 'pred_score', 'pred_label', 'pred_class']
     parser.add_argument(
         '--out-items',

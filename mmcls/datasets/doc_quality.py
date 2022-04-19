@@ -47,7 +47,7 @@ def get_samples(root, folder_to_idx):
 class DocQuality(BaseDataset):
     """Dataset kiểm tra chất lượng giấy tờ voi 6 class
     """
-    CLASSES = ['normal','bong_loa','mo_che','toi','photocopy','chup_man_hinh']
+    CLASSES = ['0_bong_loa','1_chup_man_hinh', '2_mo_che_ban_nhau','3_normal','4_den_trang','5_toi']
     #CLASSES = ['fake','other','real']
     def load_annotations(self):
         if self.ann_file is None:

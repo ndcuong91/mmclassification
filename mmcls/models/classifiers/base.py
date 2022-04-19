@@ -185,6 +185,7 @@ class BaseClassifier(BaseModule, metaclass=ABCMeta):
                     fig_size=(15, 10),
                     win_name='',
                     wait_time=0,
+                    norm_size = None,
                     out_file=None):
         """Draw `result` over `img`.
 
@@ -208,6 +209,8 @@ class BaseClassifier(BaseModule, metaclass=ABCMeta):
         """
         img = mmcv.imread(img)
         img = img.copy()
+        if norm_size is not None:
+            img = mmcv.imrescale(img, (norm_size, int(4*norm_size/5)))
 
         img = imshow_infos(
             img,
