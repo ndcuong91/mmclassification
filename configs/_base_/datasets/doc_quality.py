@@ -5,6 +5,11 @@ img_norm_cfg = dict(
 crop_size = (512,512)
 train_pipeline = [
     dict(type='LoadImageFromFile'),
+    dict(type = 'Albu',transforms=[
+            dict(type='RandomRotate90',
+                p=0.8),
+
+        ]),
     dict(type='Resize', size=(520,-1)),
     dict(type='CenterCrop',
         crop_size=crop_size),
@@ -29,18 +34,20 @@ data = dict(
 
     train=dict(
         type=dataset_type,
-        data_prefix='/home/cuongnd/PycharmProjects/document_quality_dataset/doc_quality/train',
+        # data_prefix='/home/cuongnd/PycharmProjects/document_quality_dataset/doc_quality/train',
+        data_prefix='/home/cuongnd/PycharmProjects/document_quality_dataset/doc_quality_roi/train',
         #data_prefix='/data_backup/tiep/Dataset/Image/FaceAntispoof/Train',
         pipeline=train_pipeline),
     val=dict(
         type=dataset_type,
-        data_prefix='/home/cuongnd/PycharmProjects/document_quality_dataset/doc_quality/val',
+        # data_prefix='/home/cuongnd/PycharmProjects/document_quality_dataset/doc_quality/val',
+        data_prefix='/home/cuongnd/PycharmProjects/document_quality_dataset/doc_quality_roi/val',
         #data_prefix='/data_backup/tiep/Dataset/Image/FaceAntispoof/Val',
         pipeline=test_pipeline,
         test_mode=True),
     test=dict(
         type=dataset_type,
-        data_prefix='/home/cuongnd/PycharmProjects/document_quality_dataset/doc_quality/val',
+        data_prefix='/home/cuongnd/PycharmProjects/document_quality_dataset/doc_quality_roi/val',
         #data_prefix='/data_backup/tiep/Dataset/Image/FaceAntispoof/Val',
         pipeline=test_pipeline,
         test_mode=True))

@@ -22,12 +22,16 @@ from mmcls.models.utils import to_2tuple
 bright_style, reset_style = '\x1b[1m', '\x1b[0m'
 red_text, blue_text = '\x1b[31m', '\x1b[34m'
 white_background = '\x1b[107m'
+config_file = '/home/cuongnd/PycharmProjects/mmclassification/configs/resnet/resnet50_8xb16_doc_quality.py'
 output_dir = '/home/cuongnd/PycharmProjects/document_quality_dataset/doc_quality/viz_train_pipeline'
+phase = 'train'
+mode ='pipeline'
+number = 100
 
 def parse_args():
     parser = argparse.ArgumentParser(
         description='Visualize a Dataset Pipeline')
-    parser.add_argument('config', help='config file path')
+    parser.add_argument('--config', help='config file path', default=config_file)
     parser.add_argument(
         '--skip-type',
         type=str,
@@ -41,7 +45,7 @@ def parse_args():
         help='folder to save output pictures, if not set, do not save.')
     parser.add_argument(
         '--phase',
-        default='train',
+        default=phase,
         type=str,
         choices=['train', 'test', 'val'],
         help='phase of dataset to visualize, accept "train" "test" and "val".'
@@ -49,13 +53,13 @@ def parse_args():
     parser.add_argument(
         '--number',
         type=int,
-        default=sys.maxsize,
+        default=number,
         help='number of images selected to visualize, must bigger than 0. if '
         'the number is bigger than length of dataset, show all the images in '
         'dataset; default "sys.maxsize", show all images in dataset')
     parser.add_argument(
         '--mode',
-        default='concat',
+        default=mode,
         type=str,
         choices=['original', 'transformed', 'concat', 'pipeline'],
         help='display mode; display original pictures or transformed pictures'

@@ -20,12 +20,14 @@ from mmcls.utils import collect_env, get_root_logger, setup_multi_processes
 
 # config_file = '../configs/efficientnet/efficientnet-b3_8xb32_cifar10.py'
 config_file = '/home/cuongnd/PycharmProjects/mmclassification/configs/resnet/resnet50_8xb16_doc_quality.py'
+# resume_from = '/home/cuongnd/PycharmProjects/mmclassification/tools/work_dirs/resnet50_8xb16_doc_quality/epoch_4.pth'
+resume_from = None
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a model')
     parser.add_argument('--config', help='train config file path', default=config_file)
     parser.add_argument('--work-dir', help='the dir to save logs and models')
     parser.add_argument(
-        '--resume-from', help='the checkpoint file to resume from')
+        '--resume-from', help='the checkpoint file to resume from', default = resume_from)
     parser.add_argument(
         '--no-validate',
         action='store_true',
