@@ -14,6 +14,16 @@ from mmcls.models import build_classifier
 
 torch.manual_seed(3)
 
+config_file ='configs/efficientnet/efficientnet-b3_8xb32_doc_crop.py'
+ckpt_path ='tools/work_dirs/efficientnet-b3_8xb32_doc_crop_2022-05-12_18-36/epoch_102.pth'
+output_file =''
+shape =256
+dynamic_export = True
+show = True
+simplify = True
+verify = True
+
+
 
 def _demo_mm_inputs(input_shape, num_classes):
     """Create a superset of inputs needed to run test or train batches.
@@ -166,6 +176,10 @@ def pytorch2onnx(model,
         sess = rt.InferenceSession(output_file)
         onnx_result = sess.run(
             None, {net_feed_input[0]: img_list[0].detach().numpy()})[0]
+        print(pytorch_result)
+
+        print()
+        print(onnx_result)
         if not np.allclose(pytorch_result, onnx_result):
             raise ValueError(
                 'The outputs are different between Pytorch and ONNX')

@@ -22,7 +22,7 @@ from mmcls.models.utils import to_2tuple
 bright_style, reset_style = '\x1b[1m', '\x1b[0m'
 red_text, blue_text = '\x1b[31m', '\x1b[34m'
 white_background = '\x1b[107m'
-config_file = '/home/cuongnd/PycharmProjects/mmclassification/configs/resnet/resnet50_8xb16_doc_quality.py'
+config_file = '/home/cuongnd/PycharmProjects/mmclassification/configs/efficientnet/efficientnet-b3_8xb32_doc_quality.py'
 output_dir = '/home/cuongnd/PycharmProjects/document_quality_dataset/doc_quality/viz_train_pipeline'
 phase = 'train'
 mode ='pipeline'

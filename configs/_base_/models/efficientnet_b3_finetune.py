@@ -11,8 +11,8 @@ model = dict(
     neck=dict(type='GlobalAveragePooling'),
     head=dict(
         type='LinearClsHead',
-        num_classes=10,
+        num_classes=6,
         in_channels=1536,
         loss=dict(type='CrossEntropyLoss', loss_weight=1.0),
-        topk=(1, 5),
+        topk=1,
     ))

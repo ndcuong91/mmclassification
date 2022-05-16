@@ -125,3 +125,4 @@ venv.bak/
 *.pth
 tools/work_dirs/
 tools/data/cifar10/
+*.onnx

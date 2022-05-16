@@ -17,11 +17,12 @@ from mmcls.datasets import build_dataloader, build_dataset
 from mmcls.models import build_classifier
 from mmcls.utils import get_root_logger, setup_multi_processes
 
-config = '../configs/resnet/resnet50_8xb16_doc_quality.py'
-ckpt = '/home/cuongnd/PycharmProjects/mmclassification/tools/work_dirs/resnet50_8xb16_doc_quality/best_accuracy_epoch_176.pth'
+# config = '../configs/resnet/resnet50_8xb16_doc_crop.py'
+config = '../configs/efficientnet/efficientnet-b3_8xb32_doc_crop.py'
+ckpt = '/home/cuongnd/PycharmProjects/mmclassification/tools/work_dirs/efficientnet-b3_8xb32_doc_crop_2022-05-12_18-36/epoch_102.pth'
 show = False
 eval_metric = "accuracy"
-save_dir ='/home/cuongnd/PycharmProjects/mmclassification/data/doc_quality/res'
+save_dir ='/home/cuongnd/PycharmProjects/document_quality_dataset/doc_lack_of_corner/res/val'
 output_res_file = os.path.basename(ckpt).split('.')[0]+'_res.pkl'
 
 def parse_args():

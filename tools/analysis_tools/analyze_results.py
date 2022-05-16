@@ -9,9 +9,10 @@ from mmcls.datasets import build_dataset
 from mmcls.models import build_classifier
 
 
-config_file = '/home/cuongnd/PycharmProjects/mmclassification/configs/resnet/resnet18_8xb16_doc_quality.py'
-res_file = '/home/cuongnd/PycharmProjects/mmclassification/tools/best_accuracy_epoch_176_res.pkl'
-out_dir = '/home/cuongnd/PycharmProjects/document_quality_dataset/doc_quality/res/'+os.path.basename(res_file).split('.')[0]
+#config_file = '/home/cuongnd/PycharmProjects/mmclassification/configs/resnet/resnet50_8xb16_doc_crop.py'
+config_file  ='/home/cuongnd/PycharmProjects/mmclassification/configs/efficientnet/efficientnet-b3_8xb32_doc_crop.py'
+res_file = '/home/cuongnd/PycharmProjects/mmclassification/tools/epoch_102_res.pkl'
+out_dir = '/home/cuongnd/PycharmProjects/document_quality_dataset/doc_lack_of_corner/res/'+os.path.basename(res_file).split('.')[0]
 if not os.path.exists(out_dir): os.makedirs(out_dir)
 split_success_fail = True
 threshold = 0.0
@@ -68,7 +69,7 @@ def plot_confusion_matrix(preds, gts, list_class =[]):
     import numpy as np
     from sklearn.metrics import confusion_matrix
 
-    list_class = [cls[:5] for cls in list_class]
+    list_class = [cls[:6] for cls in list_class]
 
     # Get the confusion matrix
     cf_matrix = confusion_matrix(gts, preds)
@@ -148,23 +149,18 @@ def main():
 
     list_preds =[]
     list_gts =[]
-    total_samples ={'normal':0,'abnormal':0}
-    true_samples ={'normal':0,'abnormal':0}
+    total_samples = {}
+    true_samples = {}
+    for cls in dataset.CLASSES:
+        total_samples[cls] = 0
+        true_samples[cls] = 0
     for output in outputs_list:
-        if output['pred_score']>threshold and output['gt_label']!=0:
+        if output['pred_score']>threshold:
             list_preds.append(output['pred_label'])
             list_gts.append(output['gt_label'])
-            if output['gt_label'] ==3:
-                total_samples['normal']+=1
-            else :
-                total_samples['abnormal']+=1
-
-            if output['pred_label'] == output['gt_label'] and output['pred_label'] ==3:
-                true_samples['normal']+=1
-            if output['pred_label'] !=3 and output['gt_label'] !=3:
-                true_samples['abnormal']+=1
-
-            if output['pred_label'] == output['gt_label']:
+            total_samples[output['gt_class']] +=1
+            if output['pred_class'] == output['gt_class']:
+                true_samples[output['gt_class']] +=1
                 success.append(output)
             else:
                 fail.append(output)
@@ -172,15 +168,18 @@ def main():
     success = success[:args.topk]
     fail = fail[:args.topk]
 
-    print('normal acc:', round(100*true_samples['normal']/total_samples['normal'],2))
-    print('abnormal acc:', round(100*true_samples['abnormal']/total_samples['abnormal'],2))
+    # if total_samples['normal']>0:
+    #     print('normal acc:', round(100*true_samples['normal']/total_samples['normal'],2))
+    #
+    # if total_samples['abnormal'] > 0:
+    #     print('abnormal acc:', round(100*true_samples['abnormal']/total_samples['abnormal'],2))
 
-    plot_confusion_matrix(list_preds, list_gts, list_class=dataset.CLASSES)
+    # plot_confusion_matrix(list_preds, list_gts, list_class=dataset.CLASSES)
 
     if split_success_fail:
         print('Split imgs to success / fail based on pred / gt...')
-        #save_imgs(args.out_dir, 'success', success, model)
-        save_imgs(args.out_dir, 'fail', fail, model, filter = True)
+        save_imgs(args.out_dir, 'success', success, model)
+        save_imgs(args.out_dir, 'fail', fail, model, filter = False)
         print('Done')
 
 
