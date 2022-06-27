@@ -20,7 +20,6 @@ def find_folders(root):
     folder_to_idx = {folders[i]: i for i in range(len(folders))}
     return folder_to_idx
 
-
 def get_samples(root, folder_to_idx):
     """Make dataset by walking all images under a root.
 

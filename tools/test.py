@@ -16,20 +16,18 @@ from mmcls.apis import multi_gpu_test, single_gpu_test
 from mmcls.datasets import build_dataloader, build_dataset
 from mmcls.models import build_classifier
 from mmcls.utils import get_root_logger, setup_multi_processes
+from mmcls.config import config_file, pkl_file, ckpt_test
 
-# config = '../configs/resnet/resnet50_8xb16_doc_crop.py'
-config = '../configs/efficientnet/efficientnet-b3_8xb32_doc_crop.py'
-ckpt = '/home/cuongnd/PycharmProjects/mmclassification/tools/work_dirs/efficientnet-b3_8xb32_doc_crop_2022-05-12_18-36/epoch_102.pth'
 show = False
+device = 'cuda:0'
 eval_metric = "accuracy"
-save_dir ='/home/cuongnd/PycharmProjects/document_quality_dataset/doc_lack_of_corner/res/val'
-output_res_file = os.path.basename(ckpt).split('.')[0]+'_res.pkl'
+save_dir ='/home/cuongnd/PycharmProjects/document_quality_dataset/doc_quality_ekyc/res'
 
 def parse_args():
     parser = argparse.ArgumentParser(description='mmcls test model')
-    parser.add_argument('--config', help='test config file path', default = config)
-    parser.add_argument('--checkpoint', help='checkpoint file', default = ckpt)
-    parser.add_argument('--out', help='output result file', default = output_res_file)
+    parser.add_argument('--config', help='test config file path', default = config_file)
+    parser.add_argument('--checkpoint', help='checkpoint file', default = ckpt_test)
+    parser.add_argument('--out', help='output result file', default = pkl_file)
     out_options = ['class_scores', 'pred_score', 'pred_label', 'pred_class']
     parser.add_argument(
         '--out-items',
@@ -83,7 +81,7 @@ def parse_args():
         help='custom options for show_result. key-value pair in xxx=yyy.'
         'Check available options in `model.show_result`.')
     parser.add_argument(
-        '--device', default=None, help='device used for testing. (Deprecated)')
+        '--device', default=device, help='device used for testing. (Deprecated)')
     parser.add_argument(
         '--gpu-ids',
         type=int,
@@ -181,8 +179,13 @@ def main():
                     'is not lower than v1.4.4'
         model.CLASSES = CLASSES
         show_kwargs = {} if args.show_options is None else args.show_options
+        import time
+        begin_time = time.time()
         outputs = single_gpu_test(model, data_loader, args.show, args.show_dir,
                                   **show_kwargs)
+        end_time = time.time()
+        inference_time = 1000*(end_time-begin_time)
+        print('\nAvg time:',inference_time/len(dataset.data_infos),'ms per img' )
     else:
         model = MMDistributedDataParallel(
             model.cuda(),

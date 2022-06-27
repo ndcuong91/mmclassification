@@ -14,11 +14,11 @@ from mmcls.models import build_classifier
 
 torch.manual_seed(3)
 
-config_file ='configs/efficientnet/efficientnet-b3_8xb32_doc_crop.py'
-ckpt_path ='tools/work_dirs/efficientnet-b3_8xb32_doc_crop_2022-05-12_18-36/epoch_102.pth'
+config_file ='/home/cuongnd/PycharmProjects/mmclassification/tools/work_dirs/efficientnet-b3_8xb32_doc_crop_2022-05-12_18-36/efficientnet-b3_8xb32_doc_crop.py'
+ckpt_path ='/home/cuongnd/PycharmProjects/mmclassification/tools/work_dirs/efficientnet-b3_8xb32_doc_crop_2022-05-12_18-36/best_accuracy_epoch_103.pth'
 output_file =''
 shape =256
-dynamic_export = True
+dynamic_export = False
 show = True
 simplify = True
 verify = True
@@ -188,26 +188,26 @@ def pytorch2onnx(model,
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Convert MMCls to ONNX')
-    parser.add_argument('config', help='test config file path')
-    parser.add_argument('--checkpoint', help='checkpoint file', default=None)
+    parser.add_argument('--config', help='test config file path', default=config_file)
+    parser.add_argument('--checkpoint', help='checkpoint file', default=ckpt_path)
     parser.add_argument('--show', action='store_true', help='show onnx graph')
     parser.add_argument(
-        '--verify', action='store_true', help='verify the onnx model')
+        '--verify', default=verify, help='verify the onnx model')
     parser.add_argument('--output-file', type=str, default='tmp.onnx')
     parser.add_argument('--opset-version', type=int, default=11)
     parser.add_argument(
         '--simplify',
-        action='store_true',
+        default=simplify,
         help='Whether to simplify onnx model.')
     parser.add_argument(
         '--shape',
         type=int,
         nargs='+',
-        default=[224, 224],
+        default=[shape,shape],
         help='input image size')
     parser.add_argument(
         '--dynamic-export',
-        action='store_true',
+        default = dynamic_export,
         help='Whether to export ONNX with dynamic input shape. \
             Defaults to False.')
     args = parser.parse_args()

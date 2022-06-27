@@ -45,10 +45,9 @@ def get_samples(root, folder_to_idx):
 
 @DATASETS.register_module()
 class DocQuality(BaseDataset):
-    """Dataset kiểm tra chất lượng giấy tờ voi 6 class
+    """Dataset kiểm tra chất lượng giấy tờ voi 5 class
     """
-    CLASSES = ['0_bong_loa','1_chup_man_hinh', '2_mo_che_ban_nhau','3_normal','4_den_trang','5_toi']
-    #CLASSES = ['fake','other','real']
+    CLASSES = ['1_chup_man_hinh', '2_mo_ban_nhau','3_normal','4_den_trang','5_toi']
     def load_annotations(self):
         if self.ann_file is None:
             folder_to_idx = find_folders(self.data_prefix)

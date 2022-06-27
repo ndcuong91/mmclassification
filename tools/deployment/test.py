@@ -10,19 +10,22 @@ from mmcv.parallel import MMDataParallel
 from mmcls.apis import single_gpu_test
 from mmcls.core.export import ONNXRuntimeClassifier, TensorRTClassifier
 from mmcls.datasets import build_dataloader, build_dataset
-
+config_file = '/home/cuongnd/PycharmProjects/mmclassification/tools/work_dirs/efficientnet-b3_8xb32_doc_crop_2022-05-12_18-36/efficientnet-b3_8xb32_doc_crop.py'
+ckpt_path = '/home/cuongnd/PycharmProjects/mmclassification/tools/deployment/tmp.onnx'
+save_dir = '/home/cuongnd/PycharmProjects/document_quality_dataset/doc_lack_of_corner/res/val'
 
 def parse_args():
     parser = argparse.ArgumentParser(
         description='Test (and eval) an ONNX model using ONNXRuntime.')
-    parser.add_argument('config', help='model config file')
-    parser.add_argument('model', help='filename of the input ONNX model')
+    parser.add_argument('--config', help='model config file', default = config_file)
+    parser.add_argument('--model', help='filename of the input ONNX model', default=ckpt_path)
     parser.add_argument(
         '--backend',
         help='Backend of the model.',
+        default= 'onnxruntime',
         choices=['onnxruntime', 'tensorrt'])
     parser.add_argument(
-        '--out', type=str, help='output result file in pickle format')
+        '--out', type=str, default='out.pkl', help='output result file in pickle format')
     parser.add_argument(
         '--cfg-options',
         nargs='+',
@@ -33,6 +36,7 @@ def parse_args():
         '--metrics',
         type=str,
         nargs='+',
+        default='accuracy',
         help='evaluation metrics, which depends on the dataset, e.g., '
         '"accuracy", "precision", "recall", "f1_score", "support" for single '
         'label dataset, and "mAP", "CP", "CR", "CF1", "OP", "OR", "OF1" for '
@@ -47,7 +51,7 @@ def parse_args():
         ' function.')
     parser.add_argument('--show', action='store_true', help='show results')
     parser.add_argument(
-        '--show-dir', help='directory where painted images will be saved')
+        '--show-dir', default=save_dir, help='directory where painted images will be saved')
     args = parser.parse_args()
     return args
 
@@ -84,7 +88,11 @@ def main():
 
     model = MMDataParallel(model, device_ids=[0])
     model.CLASSES = dataset.CLASSES
+    import time
+    begin = time.time()
     outputs = single_gpu_test(model, data_loader, args.show, args.show_dir)
+    end = time.time()
+    print('inf time', 1000*(end-begin))
 
     if args.metrics:
         results = dataset.evaluate(outputs, args.metrics, args.metric_options)

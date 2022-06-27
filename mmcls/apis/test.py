@@ -56,12 +56,12 @@ def single_gpu_test(model,
                     'pred_label': pred_label[i],
                     'pred_class': pred_class[i]
                 }
-                model.module.show_result(
-                    img_show,
-                    result_show,
-                    show=show,
-                    out_file=out_file,
-                    **show_kwargs)
+                # model.module.show_result(
+                #     img_show,
+                #     result_show,
+                #     show=show,
+                #     out_file=out_file,
+                #     **show_kwargs)
 
         batch_size = data['img'].size(0)
         for _ in range(batch_size):

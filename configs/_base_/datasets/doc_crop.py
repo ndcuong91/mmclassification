@@ -2,7 +2,7 @@
 dataset_type = 'DocCrop'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
-crop_size = (256, 256)
+crop_size = (480, 480)
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='Albu', transforms=[
@@ -38,7 +38,7 @@ data = dict(
         test_mode=True),
     test=dict(
         type=dataset_type,
-        data_prefix='/home/cuongnd/PycharmProjects/document_quality_dataset/doc_lack_of_corner/test',
+        data_prefix='/home/cuongnd/PycharmProjects/document_quality_dataset/doc_lack_of_corner/val',
         pipeline=test_pipeline,
         test_mode=True))
 

@@ -7,12 +7,10 @@ from mmcv import DictAction
 
 from mmcls.datasets import build_dataset
 from mmcls.models import build_classifier
+from mmcls.config import config_file, pkl_file
 
 
-#config_file = '/home/cuongnd/PycharmProjects/mmclassification/configs/resnet/resnet50_8xb16_doc_crop.py'
-config_file  ='/home/cuongnd/PycharmProjects/mmclassification/configs/efficientnet/efficientnet-b3_8xb32_doc_crop.py'
-res_file = '/home/cuongnd/PycharmProjects/mmclassification/tools/epoch_102_res.pkl'
-out_dir = '/home/cuongnd/PycharmProjects/document_quality_dataset/doc_lack_of_corner/res/'+os.path.basename(res_file).split('.')[0]
+out_dir = '/home/cuongnd/PycharmProjects/document_quality_dataset/doc_quality_ekyc/res/'+os.path.basename(pkl_file).split('.')[0]
 if not os.path.exists(out_dir): os.makedirs(out_dir)
 split_success_fail = True
 threshold = 0.0
@@ -20,7 +18,7 @@ threshold = 0.0
 def parse_args():
     parser = argparse.ArgumentParser(description='MMCls evaluate prediction success/fail')
     parser.add_argument('--config', help='test config file path', default = config_file)
-    parser.add_argument('--result', help='test result json/pkl file', default = res_file)
+    parser.add_argument('--result', help='test result json/pkl file', default = pkl_file)
     parser.add_argument('--out-dir', help='dir to store output files', default = out_dir)
     parser.add_argument(
         '--topk',
@@ -43,6 +41,15 @@ def parse_args():
 
 
 def save_imgs(result_dir, folder_name, results, model, filter = False):
+    '''
+
+    :param result_dir:
+    :param folder_name:
+    :param results:
+    :param model:
+    :param filter:
+    :return:
+    '''
     full_dir = osp.join(result_dir, folder_name)
     mmcv.mkdir_or_exist(full_dir)
     mmcv.dump(results, osp.join(full_dir, folder_name + '.json'))
@@ -50,11 +57,9 @@ def save_imgs(result_dir, folder_name, results, model, filter = False):
     # save imgs
     show_keys = ['pred_score', 'pred_class', 'gt_class']
     for result in results:
-        cont_ok = filter and result['gt_label']==3
-        if not filter or cont_ok:
-            result_show = dict((k, v) for k, v in result.items() if k in show_keys)
-            outfile = osp.join(full_dir, osp.basename(result['filename']))
-            model.show_result(result['filename'], result_show, out_file=outfile, norm_size=800)
+        result_show = dict((k, v) for k, v in result.items() if k in show_keys)
+        outfile = osp.join(full_dir, osp.basename(result['filename']))
+        model.show_result(result['filename'], result_show, out_file=outfile, norm_size=800)
 
 
 def plot_confusion_matrix(preds, gts, list_class =[]):
@@ -151,6 +156,8 @@ def main():
     list_gts =[]
     total_samples = {}
     true_samples = {}
+    normal = list()
+    abnormal = list()
     for cls in dataset.CLASSES:
         total_samples[cls] = 0
         true_samples[cls] = 0
@@ -164,6 +171,10 @@ def main():
                 success.append(output)
             else:
                 fail.append(output)
+            if output['pred_label'] ==0:
+                abnormal.append(output)
+            else:
+                normal.append(output)
 
     success = success[:args.topk]
     fail = fail[:args.topk]
@@ -174,12 +185,14 @@ def main():
     # if total_samples['abnormal'] > 0:
     #     print('abnormal acc:', round(100*true_samples['abnormal']/total_samples['abnormal'],2))
 
-    # plot_confusion_matrix(list_preds, list_gts, list_class=dataset.CLASSES)
+    plot_confusion_matrix(list_preds, list_gts, list_class=dataset.CLASSES)
 
     if split_success_fail:
         print('Split imgs to success / fail based on pred / gt...')
-        save_imgs(args.out_dir, 'success', success, model)
+        # save_imgs(args.out_dir, 'success', success, model)
         save_imgs(args.out_dir, 'fail', fail, model, filter = False)
+        #save_imgs(args.out_dir, 'normal', normal, model)
+        #save_imgs(args.out_dir, 'abnormal', abnormal, model, filter = False)
         print('Done')
 
 

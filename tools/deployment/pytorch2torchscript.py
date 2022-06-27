@@ -11,6 +11,7 @@ from mmcv.runner import load_checkpoint
 from torch import nn
 
 from mmcls.models import build_classifier
+from mmcls.config import config_file, ckpt_test, input_shape
 
 torch.manual_seed(3)
 
@@ -91,19 +92,18 @@ def pytorch2torchscript(model: nn.Module, input_shape: tuple, output_file: str,
 def parse_args():
     parser = argparse.ArgumentParser(
         description='Convert MMCls to TorchScript')
-    parser.add_argument('config', help='test config file path')
-    parser.add_argument('--checkpoint', help='checkpoint file', type=str)
+    parser.add_argument('--config', help='test config file path', default=config_file)
+    parser.add_argument('--checkpoint', help='checkpoint file', type=str, default=ckpt_test)
     parser.add_argument(
         '--verify',
-        action='store_true',
         help='verify the TorchScript model',
-        default=False)
+        default=True)
     parser.add_argument('--output-file', type=str, default='tmp.pt')
     parser.add_argument(
         '--shape',
         type=int,
         nargs='+',
-        default=[224, 224],
+        default=[input_shape, input_shape],
         help='input image size')
     args = parser.parse_args()
     return args

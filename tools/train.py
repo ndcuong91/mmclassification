@@ -17,18 +17,15 @@ from mmcls.datasets import build_dataset
 from mmcls.models import build_classifier
 from mmcls.utils import collect_env, get_root_logger, setup_multi_processes
 from datetime import datetime
+from mmcls.config import config_file, ckpt_resume
 
-config_file = '/home/cuongnd/PycharmProjects/mmclassification/configs/efficientnet/efficientnet-b3_8xb32_doc_quality.py'
-#config_file = '/home/cuongnd/PycharmProjects/mmclassification/configs/resnet/resnet50_8xb16_doc_crop.py'
-resume_from = '/home/cuongnd/PycharmProjects/mmclassification/tools/work_dirs/efficientnet-b3_8xb32_doc_quality_2022-05-13_11-51/epoch_23.pth'
-# resume_from = None
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Train a model')
     parser.add_argument('--config', help='train config file path', default=config_file)
     parser.add_argument('--work-dir', help='the dir to save logs and models')
     parser.add_argument(
-        '--resume-from', help='the checkpoint file to resume from', default=resume_from)
+        '--resume-from', help='the checkpoint file to resume from', default=ckpt_resume)
     parser.add_argument(
         '--no-validate',
         action='store_true',
